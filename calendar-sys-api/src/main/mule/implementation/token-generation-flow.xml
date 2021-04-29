@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="token-generation-Sub_Flow" doc:id="1002b587-db3f-4325-9247-7296d8b6fd9c" >
+		<logger level="INFO" doc:name="Logger" doc:id="d9fc10c7-839a-40a0-8ace-585bade54ee4" message="token-generation subflow started"/>
+		<until-successful maxRetries="#[p('reconnection.attempts')]" doc:name="Until Successful" doc:id="9f5d2772-4283-44df-ad16-b18df84fbdfa" millisBetweenRetries="${reconnection.frequency}">
+			<http:request method="POST" doc:name="Request to generate access token" doc:id="a406e0b4-146f-40af-ac36-1cb0445921d9" config-ref="HTTP_Request_configuration" path="#[p('tokenrequest.path')]">
+			<http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"grant_type": p('tokenrequest.grant_type'),
+    "refresh_token": p('tokenrequest.refresh_token'),
+    "client_id":p('tokenrequest.client_id'),
+    "client_secret":p('tokenrequest.client_secret')
+}]]]></http:body>
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request>
+		</until-successful>
+		<ee:transform doc:name="var-tokenDetails" doc:id="0b1d39ae-5a27-4a0a-b74b-08bd9448fba4" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/tokenDetails.dwl" variableName="tokenDetails" />
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+</mule>

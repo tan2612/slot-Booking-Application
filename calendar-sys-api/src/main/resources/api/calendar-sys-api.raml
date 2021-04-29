@@ -1,0 +1,33 @@
+#%RAML 1.0
+title: calendar-sys-api
+
+traits:
+  client-id-required:
+    headers:
+      client_id:
+        type: string
+        required: true
+      client_secret:
+        type: string
+        required: true
+
+/createEvent:
+  displayName: Create events
+  description: schedule meeting events using google Calendar Api
+  is: [client-id-required]
+  post:
+    headers:
+      Content-Type: 
+        required: true
+        enum:
+          - application/json
+    body:
+      application/json:
+        examples:
+          input: !include examples/post-createEvent-request-body.json
+    responses:
+      201:
+        body:
+          application/json:
+            examples:
+              output: !include examples/post-createEvent-response-body.json

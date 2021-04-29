@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="14e23228-3d8e-454a-b691-2e3a660dd15e" >
+		<http:request-connection protocol="HTTPS" host="${tokenrequest.host}" />
+	</http:request-config>
+	<http:listener-config name="calendar-sys-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="calendar-sys-api-config" api="calendar-sys-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    
+	<http:request-config name="HTTP_Request_configuration_googleApi" doc:name="HTTP Request configuration" doc:id="282501cc-e544-4f3b-a32a-58378f2242ab" basePath="${eventRequest.basepath}">
+		<http:request-connection protocol="HTTPS" host="${eventRequest.host}" />
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="e2c8a50f-b5c9-4750-80d8-fab4a3a2e52a" file="properties\config.local.yaml" />
+</mule>

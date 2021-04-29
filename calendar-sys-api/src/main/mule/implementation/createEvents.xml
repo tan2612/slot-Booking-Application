@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="createEventsFlow" doc:id="d3b6abe0-2a54-4761-b9f9-ea7631c5ca36" >
+		<logger level="INFO" doc:name="Logger" doc:id="3c9ff102-5aed-4e96-a347-91dd6fab5b91" message="Flow to create event in calendar started"/>
+		<ee:transform doc:name="var- initalPayload" doc:id="089865ef-206f-468e-a861-451e29712aa1" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/initialPayload.dwl" variableName="initialPayload" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Generate token" doc:id="6d5be282-5cfe-4b3d-a5a7-b418bae05739" name="token-generation-Sub_Flow" />
+		<logger level="INFO" doc:name="Logger" doc:id="aca0c4df-8571-49b9-a55f-273ad92793c2" message="token generated"/>
+		<flow-ref doc:name="create Event" doc:id="8639d928-66d2-4b25-8318-da0e542e50f1" name="createEvent"/>
+	</flow>
+	<sub-flow name="createEvent" doc:id="87c3788a-5778-4550-8cdd-457901765c21" >
+		<logger level="INFO" doc:name="Logger" doc:id="4f040f44-510b-428f-a3b3-39784d220f38" message="createEvent subflow started"/>
+		<ee:transform doc:name="google-api-request-body" doc:id="2d9ecdb5-fc97-430a-8ae5-d81d05599f6d">
+			<ee:message>
+				<ee:set-payload resource="dwl/google-api-request-body-creation.dwl" />
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="${reconnection.attempts}" doc:name="Until Successful" doc:id="e7b17aeb-3d67-4d4d-be76-f01dd139806b" millisBetweenRetries="${reconnection.frequency}">
+			<http:request method="POST" doc:name="Request to generate event" doc:id="48689b58-cee0-44ee-af6f-58ceefbf1e10" config-ref="HTTP_Request_configuration_googleApi" path='#["/" ++ vars.initialPayload.organizer ++ "/events"]'>
+			<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+payload]]]></http:body>
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.tokenDetails.access_token
+}]]]></http:headers>
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"conferenceDataVersion" : "1",
+	"maxAttendees" : vars.initialPayload.maxAttendees,
+	"sendUpdates" : vars.initialPayload.sendUpdates
+}]]]></http:query-params>
+		</http:request>
+		</until-successful>
+		<logger level="INFO" doc:name="Log response" doc:id="0ae5f1c5-7e50-4e7e-959b-065826d7adb8" message="#[payload]"/>
+		<ee:transform doc:name="Success Response" doc:id="e9a746c4-dd25-4d1c-82bd-0a644c42fac0" >
+			<ee:message >
+				<ee:set-payload resource="dwl/success-response-script.dwl" />
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
