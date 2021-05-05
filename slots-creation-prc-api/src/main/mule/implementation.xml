@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="implementationFlow" doc:id="2b193d1a-88c5-4bf3-9b26-6b7c1f9f6eb3" >
+		<http:listener doc:name="Listener" doc:id="c3949a6a-a03c-4222-b5d3-9432987552f7" config-ref="HTTP_Listener_config" path="/createSlots"/>
+		<flow-ref doc:name="Data-Validations" doc:id="0be703bb-115a-459e-9fa5-0690eca98249" name="Data-Validations"/>
+		<logger level="INFO" doc:name="payload before transformation" doc:id="78f7d767-6051-4745-abee-f05c418531d5" message='#[payload]'/>
+		<ee:transform doc:name="Transform Message" doc:id="26fb1a9b-0bc0-4abf-8bc2-5cf1f052a4b5" >
+			<ee:message >
+				<ee:set-payload resource="dataweave/creating-individual-slots-for-posting-in-DB.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Payload after transformation" doc:id="9917a2b9-e2e2-44bc-a0b3-674a809ed1b0" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request" doc:id="ab6fb0a9-a5a3-4266-9673-b14050745080" config-ref="HTTP_Request_configuration" path="${url.postSlots}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : attributes.headers.client_secret,
+	"Content-Type" : attributes.headers."Content-Type",
+	"client_id" : attributes.headers.client_id
+}]]]></http:headers>
+		</http:request>
+	</flow>
+	<flow name="Data-Validations" doc:id="0e36357a-c409-4438-b15c-46abbb0b1609" >
+		<validation:is-time doc:name="start_date" doc:id="78a3667c-9572-412a-908f-21c42d41b0ff" time="#[payload.start_date]" pattern="MM/dd/yyyy" message='start_date Format is incorrect, Please Provide date in "MM/dd/yyyy" format , e.g. "04/19/2021"' config-ref="Validation_Config1"/>
+		<validation:is-time doc:name="end_date" doc:id="b4a921ea-7f48-49b4-8fb6-c4edf8594dec" time="#[payload.end_date]" pattern="MM/dd/yyyy" message='end_date Format is incorrect, Please Provide date in "MM/dd/yyyy" format , e.g. "04/19/2021"' config-ref="Validation_Config1"/>
+		<validation:is-number doc:name="meeting time in minutes " doc:id="7fd0d290-6189-4e03-957a-6f1c21b617a4" config-ref="Validation_Config1" value="#[payload.duration_in_minutes]" minValue="5" numberType="SHORT" message="Duration of interview provided is incorrect. please Provide valid duration in Minutes (between 5 -150 min.)" maxValue="150"/>
+		<ee:transform doc:name="Validating Timeslots on high level" doc:id="c51ce9b5-e01b-4590-aadb-ddec394e8863" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="validating-timeslots-on-high-level" ><![CDATA[%dw 2.0
+import * from dw::Runtime
+output application/json
+---
+if(sizeOf(payload.timeslots.start_time) == sizeOf(payload.timeslots.hours)) payload
+else 
+    fail("Timeslots section is not correct")]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Validating Start time format" doc:id="0bd2ab2c-25f1-4838-a373-863cafa6d69d" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="timeFormatChecker" ><![CDATA[%dw 2.0
+import * from dw::Runtime
+output application/json
+var a = "10:30" as Time 
+fun checkTimeFormat(time) = 
+    if ((try(()->(time as LocalTime)).success)) true
+    else false
+var checkIndividualTime = payload.timeslots.start_time map {
+    a: if (checkTimeFormat($)) $ else
+    fail("incorrect format of start_time use \"HH:mm\" format ")
+}.a
+
+---
+checkIndividualTime]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Validating hours section" doc:id="ee307e1a-2088-4562-960d-7086898271a2" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="checkHours" ><![CDATA[%dw 2.0
+import * from dw::Runtime
+output application/json
+---
+payload.timeslots.hours map {
+    a: if(($ is Number) and ($ < 24) and $ > 0) $
+else
+    fail("Values in hours section are incorrect")
+}.a]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+
+	
+</flow>
+</mule>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="GetSlotsBasedOnDates" doc:id="23b8b74e-7342-470f-ae50-74d7e80d5b4a" >
+		<http:listener doc:name="Listener" doc:id="2a6199e4-6414-41da-a6ea-27c68bf17f12" config-ref="HTTP_Listener_config" path="/slots/list"/>
+		<logger level="INFO" doc:name="Logger" doc:id="64108884-7916-4dca-88f5-881b6d6ec728" message="GetSlotsBasedOnDates flow Start"/>
+		<http:request method="GET" doc:name="Request" doc:id="d84b2c89-0e16-46b3-a18a-c3f280e04673" config-ref="HTTP_Request_configuration" path="${url.getSlots}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : attributes.headers.client_secret,
+	"Content-Type" : attributes.headers."Content-Type",
+	"client_id" : attributes.headers.client_id
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	date : attributes.queryParams.date
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="738a9818-f837-47f1-81db-4937320b856f" message="Slots for given dates retrieved successfully"/>
+	</flow>
+	<flow name="confirmSlot" doc:id="d1868f19-d8e1-4fc3-9356-9aed160d6511" >
+		<http:listener doc:name="Listener" doc:id="f70cdebc-3bad-4322-a5ba-f90c4b374b4d" config-ref="HTTP_Listener_config" path="/slots/book"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c9fb400d-7a78-459b-bd27-e00f7c8d0eb3" message="GetSlotsBasedOnDates flow Start"/>
+		<ee:transform doc:name="Var Initial Payload" doc:id="aab60155-a1ea-4225-91f6-5b1f996f748a" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="var_initial_payload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="PATCH" doc:name="confrim slot" doc:id="00b47724-31be-42b8-b7f3-f28e45efcb27" config-ref="HTTP_Request_configuration" path="${url.bookSlot}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : attributes.headers.client_secret,
+	"Content-Type" : attributes.headers."Content-Type",
+	"client_id" : attributes.headers.client_id
+}]]]></http:headers>
+		</http:request>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="bc72219d-825f-4a8f-982a-966531ece80c" >
+			<route >
+				<flow-ref doc:name="GoogleCalendarSlotAdding" doc:id="e058da59-904f-4e20-9527-16cef0f6a9fe" name="GoogleCalendarSlotAdding"/>
+			</route>
+			<route >
+				<flow-ref doc:name="SlackNotification" doc:id="5f3380a9-a714-4f94-932d-bd49576d2b72" name="SlackNotification"/>
+			</route>
+		</scatter-gather>
+	</flow>
+	<flow name="GoogleCalendarSlotAdding" doc:id="442f7549-fc3c-4b4e-b2ba-f6d29723f377" >
+		<set-payload value='#[{&#10;    "name": "Kuchh bhi",&#10;    "email": "kuchh.bhi@demo.com",&#10;    "slot_date": "2021-05-02",&#10;    "slot_time": "15:00:00",&#10;    "emp_email": "jenny@apisero.com"&#10;}]' doc:name="Set Payload" doc:id="b5c9a669-4052-4c9f-9fa9-37718a4120ab" />
+	</flow>
+	<flow name="SlackNotification" doc:id="8478d88a-1f84-47f8-a3ed-a145f547ce05" >
+		<set-payload value='#[{&#10;    "name": "Kuchh bhi",&#10;    "email": "kuchh.bhi@demo.com",&#10;    "slot_date": "2021-05-02",&#10;    "slot_time": "15:00:00",&#10;    "emp_email": "jenny@apisero.com"&#10;}]' doc:name="Set Payload" doc:id="bae5b770-af18-49ab-9462-0f6fa22d35e8" />
+	</flow>
+</mule>

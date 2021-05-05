@@ -6,8 +6,7 @@ tokenrequest:
   refresh_token: "1//04uUnjhy5tYzXCgYIARAAGAQSNwF-L9IrO58oXMznbLSgBj89iWdXmXD7ZgjY55EppOKziZo_4wAEar-YJoiUFE3_jxY62A_wv8M"
   client_id: "841915886028-podcf5q449l1amagrc8an0cc4dgkp6j7.apps.googleusercontent.com"
   client_secret: "qyeUO10xS8SUHlvH6eC_hREH"
-  
-  
+
 reconnection:
   frequency: "30000"
   attempts: "3"
@@ -15,4 +14,4 @@ reconnection:
 eventRequest:
   host: "www.googleapis.com"
   basepath: "/calendar/v3/calendars/"
-  
+

@@ -3,18 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.mycompany</groupId>
-	<artifactId>calendar-sys-api</artifactId>
+	<artifactId>slots-creation-prc-api</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 
-	<name>calendar-sys-api</name>
+	<name>slots-creation-prc-api</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<app.runtime>4.3.0-20210322</app.runtime>
-		<mule.maven.plugin.version>3.3.5</mule.maven.plugin.version>
+		<mule.maven.plugin.version>3.4.2</mule.maven.plugin.version>
 	</properties>
 
 	<build>
@@ -37,8 +37,21 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-validation-module</artifactId>
+			<version>1.4.3</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>fc284df1-3d39-43e5-8981-c1f127ab5944</groupId>
+			<artifactId>slots-creation-prc-api</artifactId>
+			<version>1.0.0</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-apikit-module</artifactId>
-			<version>1.3.16</version>
+			<version>1.5.1</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>

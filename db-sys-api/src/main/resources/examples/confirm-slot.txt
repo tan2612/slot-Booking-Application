@@ -1,0 +1,6 @@
+{
+  "name": "Henry Ford",
+  "email": "henry@demo.com",
+  "slot_date": "2021-05-23",
+  "slot_time": "10:00:00"
+}

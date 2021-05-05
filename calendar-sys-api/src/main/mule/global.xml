@@ -9,9 +9,6 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="14e23228-3d8e-454a-b691-2e3a660dd15e" >
 		<http:request-connection protocol="HTTPS" host="${tokenrequest.host}" />
 	</http:request-config>
-	<http:listener-config name="calendar-sys-api-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081" />
-    </http:listener-config>
     <apikit:config name="calendar-sys-api-config" api="calendar-sys-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     
 	<http:request-config name="HTTP_Request_configuration_googleApi" doc:name="HTTP Request configuration" doc:id="282501cc-e544-4f3b-a32a-58378f2242ab" basePath="${eventRequest.basepath}">

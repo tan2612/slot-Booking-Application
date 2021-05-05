@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="confirm-slot-ip" format="json">
+      <types:shape format="weave" example="examples/confirm-slot.txt"><![CDATA[%dw 2.0
+
+type confirm_slot_ip = {|
+  name: String, 
+  email: String, 
+  slot_date: String, 
+  slot_time: String
+|} {"example": "{\\\"name\\\":\\\"Henry Ford\\\",\\\"email\\\":\\\"henry@demo.com\\\",\\\"slot_date\\\":\\\"2021-05-23\\\",\\\"slot_time\\\":\\\"10:00:00\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#aab60155-a1ea-4225-91f6-5b1f996f748a">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="confirm-slot-ip"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
