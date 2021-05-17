@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="3427957a-66df-479e-8d53-cab7f490a33d" basePath="${calendar-sys-api.http.basepath}" >
+		<http:request-connection host="${calendar-sys-api.http.host}" port="${calendar-sys-api.http.port}" />
+	</http:request-config>
+	<error-handler name="globalError_Handler" doc:id="f99c5437-41a3-46eb-b8b2-3c09cf90c0af" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d6cffc4e-68d4-40e5-8670-28ac550b2728" type="APP:CALENDARERROR">
+			<ee:transform doc:name="Transform Message" doc:id="af0e21b6-5ea4-4c00-a214-6995659cd248">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"Your request has been received. Please wait for the confirmation for 24 hours. For any further queries and concerns. Please mail to: " ++ p('errorIssue.mail')]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="f394198d-85e3-4cc4-b527-59c9bb825681" message="Email to be send to development team" />
+		</on-error-continue>
+	</error-handler>
 	</mule>

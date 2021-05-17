@@ -46,19 +46,50 @@ payload]]></ee:set-variable>
 	"client_id" : attributes.headers.client_id
 }]]]></http:headers>
 		</http:request>
-		<scatter-gather doc:name="Scatter-Gather" doc:id="bc72219d-825f-4a8f-982a-966531ece80c" >
-			<route >
-				<flow-ref doc:name="GoogleCalendarSlotAdding" doc:id="e058da59-904f-4e20-9527-16cef0f6a9fe" name="GoogleCalendarSlotAdding"/>
-			</route>
-			<route >
-				<flow-ref doc:name="SlackNotification" doc:id="5f3380a9-a714-4f94-932d-bd49576d2b72" name="SlackNotification"/>
-			</route>
-		</scatter-gather>
+		<flow-ref doc:name="GoogleCalendarSlotAdding" doc:id="e058da59-904f-4e20-9527-16cef0f6a9fe" name="GoogleCalendarSlotAdding" />
 	</flow>
 	<flow name="GoogleCalendarSlotAdding" doc:id="442f7549-fc3c-4b4e-b2ba-f6d29723f377" >
-		<set-payload value='#[{&#10;    "name": "Kuchh bhi",&#10;    "email": "kuchh.bhi@demo.com",&#10;    "slot_date": "2021-05-02",&#10;    "slot_time": "15:00:00",&#10;    "emp_email": "jenny@apisero.com"&#10;}]' doc:name="Set Payload" doc:id="b5c9a669-4052-4c9f-9fa9-37718a4120ab" />
-	</flow>
-	<flow name="SlackNotification" doc:id="8478d88a-1f84-47f8-a3ed-a145f547ce05" >
-		<set-payload value='#[{&#10;    "name": "Kuchh bhi",&#10;    "email": "kuchh.bhi@demo.com",&#10;    "slot_date": "2021-05-02",&#10;    "slot_time": "15:00:00",&#10;    "emp_email": "jenny@apisero.com"&#10;}]' doc:name="Set Payload" doc:id="bae5b770-af18-49ab-9462-0f6fa22d35e8" />
+		<ee:transform doc:name="request payload for calendar sapi" doc:id="c3447e92-cadb-4750-b130-347009a33cba" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "organizer": payload.emp_email default "tanya.yadav@apisero.com",
+    "maxAttendees": p('calendar-sys-api.maxAttendees') default "2",
+    "sendUpdates": p('calendar-sys-api.sendUpdates') default "all",
+    "end": {
+        "dateTime": payload.slot_date ++ "T" ++ payload.slot_time_end ++ "+05:30",
+        "timeZone": "IST"
+    },
+    "start": {
+        "dateTime": payload.slot_date ++ "T" ++ payload.slot_time_start ++ "+05:30",
+        "timeZone": "IST"
+    },
+    "attendees": 
+        {
+          "required":{
+            "email": [payload.candidate_email]
+          },
+          "optional":{
+            "email": ["test@test.com", "xyz@xyz.com"]
+          }
+        },
+    "summary": p('calendar-sys-api.summary') default "Interview:Bare Essential",
+    "description": p('calendar-sys-api.description') default "Please join the interview:Description",
+    "guestsCanSeeOtherGuests": p('calendar-sys-api.guestCanSeeOtherGuests'),
+    "attachments": [
+      {
+      "fileUrl": p('calendar-sys-api.attachments.fileUrl') default "https://www.google.com/",
+      "title": p('calendar-sys-api.attachments.title') default "interview kit"
+      }
+    ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="95dc1e0c-7074-475e-a2eb-e9c96acbf425" config-ref="HTTP_Request_configuration1" path="#[p('calendar-sys-api.http.path')]">
+			<error-mapping targetType="APP:CALENDARERROR" />
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="f6e0ce0e-13c3-40f2-8109-546e5b4afb2e" message="Slot booked successfully"/>
 	</flow>
 </mule>
