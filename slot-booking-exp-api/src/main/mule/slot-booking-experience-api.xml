@@ -5,11 +5,8 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c2842dc7-5bc0-4517-9a92-dc918721849a" >
-		<http:listener-connection host="0.0.0.0" port="8081" />
-	</http:listener-config>
 	<flow name="slot-booking-experience-apiFlow" doc:id="f903e38e-1137-41f0-bc8f-1f10cf962f84" >
-		<http:listener doc:name="Listener" doc:id="7456df49-f154-4ce6-8ecc-09677c990bca" config-ref="HTTP_Listener_config" path="/api/slot-booking"/>
+		<http:listener doc:name="Listener" doc:id="7456df49-f154-4ce6-8ecc-09677c990bca" path="/api/slot-booking" config-ref="HTTP_Listener_config"/>
 		<apikit:router doc:name="APIkit Router" doc:id="6df78706-60f8-4e29-a28c-fd765db00530" config-ref="slot-booking-exp-api"/>
 		<error-handler >
 			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="39ab90a1-9f20-44bd-b0c7-25258c1804b7" type="APIKIT:BAD_REQUEST">
