@@ -1,5 +1,5 @@
 calendar-sys-api:
-  maxAttendees: "2"
+  maxAttendees: "5"
   sendUpdates: "all"
   summary: "Interview:Bare Essential"
   description: "Please join the interview:Description"
@@ -10,7 +10,7 @@ calendar-sys-api:
   http:
     host: "localhost"
     port: "8081"
-    basepath: "/api"
+    basepath: "/api2"
     path: "/createEvent"
     
 errorIssue:

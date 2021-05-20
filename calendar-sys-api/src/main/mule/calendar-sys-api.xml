@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
-    <flow name="slots-creation-prc-api-main">
-        <http:listener config-ref="HTTP_Listener_config" path="/api1/*">
+    <flow name="calendar-sys-api-main">
+        <http:listener config-ref="HTTP_Listener_config" path="/api2/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
@@ -10,7 +10,7 @@
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="slots-creation-prc-api-config" />
+        <apikit:router config-ref="calendar-sys-api-config"/>
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
@@ -92,7 +92,7 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="slots-creation-prc-api-console">
+    <flow name="calendar-sys-api-console">
         <http:listener config-ref="HTTP_Listener_config" path="/console/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
@@ -102,7 +102,7 @@ output application/json
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:console config-ref="slots-creation-prc-api-config" />
+        <apikit:console config-ref="calendar-sys-api-config"/>
         <error-handler>
             <on-error-propagate type="APIKIT:NOT_FOUND">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
@@ -119,7 +119,7 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="post:\createSlots:application\json:slots-creation-prc-api-config">
-		<flow-ref doc:name="implementationFlow" doc:id="34add224-f7ca-4de3-aa26-c305b81802b6" name="implementationFlow"/>
+    <flow name="post:\createEvent:application\json:calendar-sys-api-config">
+		<flow-ref doc:name="createEventsFlow" doc:id="a3585c48-5797-4582-b650-ac1a0bdda5a9" name="createEventsFlow"/>
     </flow>
 </mule>

@@ -8,6 +8,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 	<flow name="implementationFlow" doc:id="2b193d1a-88c5-4bf3-9b26-6b7c1f9f6eb3" >
 		<http:listener doc:name="Listener" doc:id="c3949a6a-a03c-4222-b5d3-9432987552f7" config-ref="HTTP_Listener_config" path="/createSlots"/>
+		<logger level="INFO" doc:name="slot-creation-prc-api-implementation flow start" doc:id="42d391ef-2c74-4bb5-a918-36eb9b18a807" message="slot-creation-prc-api-implementation flow start"/>
 		<flow-ref doc:name="Data-Validations" doc:id="0be703bb-115a-459e-9fa5-0690eca98249" name="Data-Validations"/>
 		<logger level="INFO" doc:name="payload before transformation" doc:id="78f7d767-6051-4745-abee-f05c418531d5" message='#[payload]'/>
 		<ee:transform doc:name="Transform Message" doc:id="26fb1a9b-0bc0-4abf-8bc2-5cf1f052a4b5" >
@@ -25,8 +26,10 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 	"client_id" : attributes.headers.client_id
 }]]]></http:headers>
 		</http:request>
+		<logger level="INFO" doc:name="slot-creation-prc-api-implementation flow end" doc:id="72ac7263-5a1b-4603-b44c-fcf840c93bc3" message="slot-creation-prc-api-implementation flow end"/>
 	</flow>
 	<flow name="Data-Validations" doc:id="0e36357a-c409-4438-b15c-46abbb0b1609" >
+		<logger level="INFO" doc:name="Validation subflow start" doc:id="199c0d0a-4543-4b46-a039-d2d653cbae7f" message="Validation subflow start"/>
 		<validation:is-time doc:name="start_date" doc:id="78a3667c-9572-412a-908f-21c42d41b0ff" time="#[payload.start_date]" pattern="MM/dd/yyyy" message='start_date Format is incorrect, Please Provide date in "MM/dd/yyyy" format , e.g. "04/19/2021"' config-ref="Validation_Config1"/>
 		<validation:is-time doc:name="end_date" doc:id="b4a921ea-7f48-49b4-8fb6-c4edf8594dec" time="#[payload.end_date]" pattern="MM/dd/yyyy" message='end_date Format is incorrect, Please Provide date in "MM/dd/yyyy" format , e.g. "04/19/2021"' config-ref="Validation_Config1"/>
 		<validation:is-number doc:name="meeting time in minutes " doc:id="7fd0d290-6189-4e03-957a-6f1c21b617a4" config-ref="Validation_Config1" value="#[payload.duration_in_minutes]" minValue="5" numberType="SHORT" message="Duration of interview provided is incorrect. please Provide valid duration in Minutes (between 5 -150 min.)" maxValue="150"/>
@@ -78,6 +81,7 @@ else
 }.a]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		<logger level="INFO" doc:name="Validation subflow end" doc:id="8348c9dd-e242-4a7f-b078-b42937dc7076" message="Validation subflow end"/>
 
 	
 </flow>

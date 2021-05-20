@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="getSlots" doc:id="fed19ecd-c87a-4579-8c84-9e685dd2a8bb" >
-		<logger level="INFO" doc:name="Logger" doc:id="d57cc9e3-63ba-4729-8202-8ccb4cbb6ca0" message="hi"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d57cc9e3-63ba-4729-8202-8ccb4cbb6ca0" message="getSlots flow Start"/>
 		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="a26f2b7c-3cdc-4baa-8772-5efffdacafa6" >
 			<try doc:name="Try" doc:id="d0c39bf6-5cf8-4020-8728-241f8d184201" >
 				<db:select doc:name="get Available slots" doc:id="1600d6d4-ddab-421a-b9e2-589d1c858462" config-ref="Database_Config">
@@ -42,6 +42,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		</choice>
 	</flow>
 	<flow name="PostNewSlots" doc:id="dab54ad1-8a12-4507-ada2-0c6368957ba2" >
+		<logger level="INFO" doc:name="Logger" doc:id="665cc58d-69cf-43c2-9aa1-2190a6ad002c" message="PostNewSlots flow Start"/>
 		<ee:transform doc:name="Transform Message" doc:id="7027506e-1c7c-437b-adca-dbb2c41e0b18" >
 			<ee:message >
 				<ee:set-payload resource="dataweave/bulkInput.dwl" />
@@ -85,6 +86,7 @@ payload]]></ee:set-payload>
 		</choice>
 	</flow>
 	<flow name="confirmSlots" doc:id="1eac6a80-e4f5-4a27-ab5a-e0cce89790f9" >
+		<logger level="INFO" doc:name="Logger" doc:id="6abcbeb7-cd8f-4dad-9cad-685ccd729d7a" message="confirmSlot flow Start"/>
 		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="9fb037ac-df0b-4e59-8553-99abe028407c" millisBetweenRetries="5000">
 			<try doc:name="Try" doc:id="1ef93187-b97e-4758-919a-6d5cff63a84b" >
 				<flow-ref doc:name="patchSubFlow" doc:id="3a74da59-3d83-4680-901f-88b55b0f4f71" name="patchSubFlow"/>

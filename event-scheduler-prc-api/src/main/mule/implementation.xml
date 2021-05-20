@@ -6,9 +6,8 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="GetSlotsBasedOnDates" doc:id="23b8b74e-7342-470f-ae50-74d7e80d5b4a" >
-		<http:listener doc:name="Listener" doc:id="2a6199e4-6414-41da-a6ea-27c68bf17f12" config-ref="HTTP_Listener_config" path="/slots/list"/>
 		<logger level="INFO" doc:name="Logger" doc:id="64108884-7916-4dca-88f5-881b6d6ec728" message="GetSlotsBasedOnDates flow Start"/>
-		<http:request method="GET" doc:name="Request" doc:id="d84b2c89-0e16-46b3-a18a-c3f280e04673" config-ref="HTTP_Request_configuration" path="${url.getSlots}">
+		<http:request method="GET" doc:name="Request" doc:id="d84b2c89-0e16-46b3-a18a-c3f280e04673" config-ref="HTTP_Request_configuration" path="${url.getSlots}" responseTimeout="1000000">
 			<http:headers ><![CDATA[#[output application/java
 ---
 {
@@ -25,8 +24,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<logger level="INFO" doc:name="Logger" doc:id="738a9818-f837-47f1-81db-4937320b856f" message="Slots for given dates retrieved successfully"/>
 	</flow>
 	<flow name="confirmSlot" doc:id="d1868f19-d8e1-4fc3-9356-9aed160d6511" >
-		<http:listener doc:name="Listener" doc:id="f70cdebc-3bad-4322-a5ba-f90c4b374b4d" config-ref="HTTP_Listener_config" path="/slots/book"/>
-		<logger level="INFO" doc:name="Logger" doc:id="c9fb400d-7a78-459b-bd27-e00f7c8d0eb3" message="GetSlotsBasedOnDates flow Start"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c9fb400d-7a78-459b-bd27-e00f7c8d0eb3" message="GetSlotsBasedOnDates flow Start."/>
 		<ee:transform doc:name="Var Initial Payload" doc:id="aab60155-a1ea-4225-91f6-5b1f996f748a" >
 			<ee:message >
 			</ee:message>
@@ -35,9 +33,21 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 output application/json
 ---
 payload]]></ee:set-variable>
+				<ee:set-variable variableName="client_id" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_id]]></ee:set-variable>
+				<ee:set-variable variableName="client_secret" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_secret]]></ee:set-variable>
+				<ee:set-variable variableName="Content-Type" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers."Content-Type"]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<http:request method="PATCH" doc:name="confrim slot" doc:id="00b47724-31be-42b8-b7f3-f28e45efcb27" config-ref="HTTP_Request_configuration" path="${url.bookSlot}">
+		<http:request method="PATCH" doc:name="confrim slot" doc:id="00b47724-31be-42b8-b7f3-f28e45efcb27" config-ref="HTTP_Request_configuration" path="${url.bookSlot}" responseTimeout="1000000">
 			<http:headers ><![CDATA[#[output application/java
 ---
 {
@@ -49,14 +59,14 @@ payload]]></ee:set-variable>
 		<flow-ref doc:name="GoogleCalendarSlotAdding" doc:id="e058da59-904f-4e20-9527-16cef0f6a9fe" name="GoogleCalendarSlotAdding" />
 	</flow>
 	<flow name="GoogleCalendarSlotAdding" doc:id="442f7549-fc3c-4b4e-b2ba-f6d29723f377" >
-		<ee:transform doc:name="request payload for calendar sapi" doc:id="c3447e92-cadb-4750-b130-347009a33cba" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="request payload for calendar sapi" doc:id="c3447e92-cadb-4750-b130-347009a33cba">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-    "organizer": payload.emp_email default "tanya.yadav@apisero.com",
-    "maxAttendees": p('calendar-sys-api.maxAttendees') default "2",
+    "organizer": payload.employee_email default "tanya.yadav@apisero.com",
+    "maxAttendees": p('calendar-sys-api.maxAttendees') default "5",
     "sendUpdates": p('calendar-sys-api.sendUpdates') default "all",
     "end": {
         "dateTime": payload.slot_date ++ "T" ++ payload.slot_time_end ++ "+05:30",
@@ -87,9 +97,16 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<http:request method="GET" doc:name="Request" doc:id="95dc1e0c-7074-475e-a2eb-e9c96acbf425" config-ref="HTTP_Request_configuration1" path="#[p('calendar-sys-api.http.path')]">
+		<http:request method="POST" doc:name="Request" doc:id="95dc1e0c-7074-475e-a2eb-e9c96acbf425" config-ref="HTTP_Request_configuration1" path="#[p('calendar-sys-api.http.path')]" responseTimeout="1000000">
 			<error-mapping targetType="APP:CALENDARERROR" />
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : vars.client_secret,
+	"Content-Type" : vars."Content-Type",
+	"client_id" : vars.client_id
+}]]]></http:headers>
 		</http:request>
-		<logger level="INFO" doc:name="Logger" doc:id="f6e0ce0e-13c3-40f2-8109-546e5b4afb2e" message="Slot booked successfully"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f6e0ce0e-13c3-40f2-8109-546e5b4afb2e" message="Slot booked successfully."/>
 	</flow>
 </mule>

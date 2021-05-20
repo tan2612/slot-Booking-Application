@@ -42,13 +42,6 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>fc284df1-3d39-43e5-8981-c1f127ab5944</groupId>
-			<artifactId>slots-creation-prc-api</artifactId>
-			<version>1.0.0</version>
-			<classifier>raml</classifier>
-			<type>zip</type>
-		</dependency>
-		<dependency>
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-apikit-module</artifactId>
 			<version>1.5.1</version>
@@ -60,6 +53,13 @@
 			<version>1.0.0-SNAPSHOT</version>
 			<classifier>mule-domain</classifier>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>2db59432-99d9-4f10-8096-b5d2bf9cbeac</groupId>
+			<artifactId>slots-creation-prc-api</artifactId>
+			<version>1.0.0</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
 		</dependency>
 	</dependencies>
 

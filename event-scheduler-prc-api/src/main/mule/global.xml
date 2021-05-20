@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
 	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="3427957a-66df-479e-8d53-cab7f490a33d" basePath="${calendar-sys-api.http.basepath}" >
 		<http:request-connection host="${calendar-sys-api.http.host}" port="${calendar-sys-api.http.port}" />
 	</http:request-config>
+    <apikit:config name="event-scheduler-prc-api-config" api="resource::2db59432-99d9-4f10-8096-b5d2bf9cbeac:event-scheduler-prc-api:1.0.0:raml:zip:event-scheduler-prc-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<configuration-properties doc:name="Configuration properties" doc:id="9e4dc93b-da4b-4a2a-bd9e-89c2c0e1a70c" file="properties\dev.yaml" />
+	<api-gateway:autodiscovery apiId="16884475" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="0c3e6f9e-667b-46ee-8c74-c7a47e73d78f" flowRef="event-scheduler-prc-api-main" />
 	<error-handler name="globalError_Handler" doc:id="f99c5437-41a3-46eb-b8b2-3c09cf90c0af" >
 		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d6cffc4e-68d4-40e5-8670-28ac550b2728" type="APP:CALENDARERROR">
 			<ee:transform doc:name="Transform Message" doc:id="af0e21b6-5ea4-4c00-a214-6995659cd248">

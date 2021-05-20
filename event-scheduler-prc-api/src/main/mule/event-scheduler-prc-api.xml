@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
-    
-        <flow name="calendar-sys-api-main">
-        <http:listener path="/api2/*" config-ref="HTTP_Listener_config">
+    <flow name="event-scheduler-prc-api-main">
+        <http:listener config-ref="HTTP_Listener_config" path="/api3/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
@@ -11,7 +10,7 @@
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="calendar-sys-api-config" />
+        <apikit:router config-ref="event-scheduler-prc-api-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
@@ -93,9 +92,37 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="post:\createEvent:application\json:calendar-sys-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="ff4f532a-16ca-4369-b7a8-38eb294fdecd" message="implementation started"/>
-		<flow-ref doc:name="Implementation flow-ref" doc:id="c2365177-8e8e-461c-8987-eb6780381251" name="createEventsFlow"/>
-		<logger level="INFO" doc:name="Logger" doc:id="cfe4ec5d-e280-4308-acca-9434d0ae1471" message="implementation completed"/>
+    <flow name="event-scheduler-prc-api-console">
+        <http:listener config-ref="HTTP_Listener_config" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="event-scheduler-prc-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\slots\list:event-scheduler-prc-api-config">
+		<flow-ref doc:name="GetSlotsBasedOnDates" doc:id="e72492cf-bfe1-4dcd-9d5f-214eb87f449b" name="GetSlotsBasedOnDates"/>
+    </flow>
+    <flow name="post:\slots\book:application\json:event-scheduler-prc-api-config">
+		<flow-ref doc:name="confirmSlot" doc:id="3277660e-a3f0-416e-bcc6-cc4487dfe872" name="confirmSlot"/>
     </flow>
 </mule>

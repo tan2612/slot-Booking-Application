@@ -21,7 +21,7 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="8191db80-e3d2-4a45-9e5f-0661dcb0d516" file="properties/${env}.yaml" key="${key}" >
 		<secure-properties:encrypt algorithm="Blowfish" />
 	</secure-properties:config>
-	
+	<configuration-properties doc:name="Configuration properties" doc:id="3920ac47-1fe1-4192-8c9d-5e3855c42382" file="properties\app.properties" />	
 
     <!-- configure here resource to be shared within the domain -->
 

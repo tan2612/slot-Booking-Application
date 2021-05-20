@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
-    <apikit:config name="db-system-api-config" api="resource::fc284df1-3d39-43e5-8981-c1f127ab5944:db-system-api:1.0.0:raml:zip:db-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="db-system-api-main">
-        <http:listener doc:name="Listener" doc:id="e20b8e3d-8681-445f-b0c6-8157cbaefb0d" config-ref="HTTP_Listener_config" path="/api/*"/>
-		<apikit:router config-ref="db-system-api-config" />
+        <http:listener config-ref="HTTP_Listener_config" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="db-system-api-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
@@ -113,12 +120,12 @@ output application/json
         </error-handler>
     </flow>
     <flow name="patch:\bookSlot:application\json:db-system-api-config">
-        <flow-ref doc:name="PATCH:confirmSlot" doc:id="ff6d14e9-db61-42ac-88a2-d2f5da3efdbe" name="confirmSlots"/>
+		<flow-ref doc:name="Flow Reference" doc:id="868e5106-0b59-4817-a5dc-e95c05bf9735" name="confirmSlots"/>
     </flow>
     <flow name="get:\getSlots:db-system-api-config">
-		<flow-ref doc:name="getSlots" doc:id="f9b586a7-4983-4880-a16c-fa72c74eda24" name="getSlots"/>
+		<flow-ref doc:name="Flow Reference" doc:id="2a3240f7-a186-449d-9647-c6cc1f52e001" name="getSlots"/>
     </flow>
     <flow name="post:\addSlots:application\json:db-system-api-config">
-		<flow-ref doc:name="PostNewSlots" doc:id="59c2b5cf-1f55-4418-b345-9b6a44d0eb7b" name="PostNewSlots"/>
+		<flow-ref doc:name="Flow Reference" doc:id="94b6c204-80be-4cba-b1d7-776e43c14b08" name="PostNewSlots"/>
     </flow>
 </mule>

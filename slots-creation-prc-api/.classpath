@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/2db59432-99d9-4f10-8096-b5d2bf9cbeac/slots-creation-prc-api/1.0.0"/>
 	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-sockets-connector/1.2.1"/>
 	<classpathentry kind="con" path="MULE_LIB/com.mulesoft.modules/mule-secure-configuration-property-module/1.2.3"/>
 	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-http-connector/1.5.6"/>
 	<classpathentry kind="con" path="MULE_LIB/org.mule.modules/mule-apikit-module/1.5.1"/>
-	<classpathentry kind="con" path="org.mule.tooling.API_SPEC_LIB/fc284df1-3d39-43e5-8981-c1f127ab5944/slots-creation-prc-api/1.0.0"/>
 	<classpathentry kind="con" path="MULE_LIB/org.mule.modules/mule-validation-module/1.4.3"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="MULE_RUNTIME/org.mule.tooling.server.4.3.0.ee"/>
