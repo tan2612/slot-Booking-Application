@@ -1,0 +1,31 @@
+{
+    "organizer": "tanya.yadav@apisero.com",
+    "maxAttendees": 2,
+    "sendUpdates": "all",
+    "end": {
+        "dateTime": "2021-04-29T17:00:00-07:00",
+        "timeZone": "IST"
+    },
+    "start": {
+        "dateTime": "2021-04-29T09:00:00-07:00",
+        "timeZone": "IST"
+    },
+    "attendees": 
+        {
+          "required":{
+            "email": ["test@test.com", "xyz@xyz.com"]
+          },
+          "optional":{
+            "email": ["test@test.com", "xyz@xyz.com"]
+          }
+        },
+    "summary": "Interview:Bare Essential",
+    "description": "Please join the interview:Description",
+    "guestsCanSeeOtherGuests": false,
+    "attachments": [
+      {
+      "fileUrl": "https://www.google.com/",
+      "title": "interview kit"
+      }
+    ]
+}

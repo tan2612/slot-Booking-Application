@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="slots-input" format="json">
+      <types:shape format="weave" example="examples/slots-input.txt"><![CDATA[%dw 2.0
+
+type slots_input = {|
+  emp_id: String, 
+  start_date: String, 
+  end_date: String, 
+  duration_in_minutes: Number {"typeId": "int"}, 
+  timeslots: {|
+    start_time: Array<String>, 
+    hours: Array<Number {"typeId": "int"}>
+  |}
+|} {"example": "{\\\"emp_id\\\":\\\"API001\\\",\\\"start_date\\\":\\\"04\\/19\\/2021\\\",\\\"end_date\\\":\\\"04\\/20\\/2021\\\",\\\"duration_in_minutes\\\":30,\\\"timeslots\\\":{\\\"start_time\\\":[\\\"10:30\\\",\\\"23:40\\\"],\\\"hours\\\":[1,2]}}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#26fb1a9b-0bc0-4abf-8bc2-5cf1f052a4b5">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="slots-input"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c51ce9b5-e01b-4590-aadb-ddec394e8863"/>
+</types:mule>

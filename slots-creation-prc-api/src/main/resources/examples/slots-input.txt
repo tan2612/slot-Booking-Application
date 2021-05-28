@@ -1,0 +1,16 @@
+{
+  "emp_id": "API001",
+  "start_date": "04/19/2021",
+  "end_date": "04/20/2021",
+  "duration_in_minutes": 30,
+  "timeslots": {
+    "start_time": [
+      "10:30",
+      "23:40"
+    ],
+    "hours": [
+      1,
+      2
+    ]
+  }
+}

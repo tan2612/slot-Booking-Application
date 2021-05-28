@@ -1,0 +1,6 @@
+anypoint:
+  platform:
+    analytics_base_uri=https: "//analytics-ingest.anypoint.mulesoft.com/"
+    client_id: "af70d29f9c3747c2938dd32be1402bd9"
+    client_secret: "D180Dd1E4cf8413aA7E6A995340B5141"
+    base_uri=https: "//anypoint.mulesoft.com/"

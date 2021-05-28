@@ -1,0 +1,33 @@
+http:
+  port: "8081"
+  host: "localhost"
+  
+url:
+  basepath: "/api"
+  getSlots: "/getSlots"
+  postSlots: "/addSlots"
+  bookSlot: "/bookSlot"
+  
+db:
+  url: "jdbc:postgresql://localhost:5432/slot-booking"
+  driver: "org.postgresql.Driver"
+  user: "![hoqVh3jRhxsC16jyCdMf5g==]"  #"postgres"  
+  password: "![ACZ2hhdcMS3TH0dtTGYzrw==]"   #"Apisero@123" 
+  
+calendar-sys-api:
+  maxAttendees: "5"
+  sendUpdates: "all"
+  summary: "Interview:Bare Essential"
+  description: "Please join the interview:Description"
+  guestsCanSeeOtherGuests: "false"
+  attachments:
+    fileurl: "https://www.google.com/"
+    title: "interview kit"
+  http:
+    host: "localhost"
+    port: "8081"
+    basepath: "/api2"
+    path: "/createEvent"
+    
+errorIssue:
+  mail: "tanya.yadav@apisero.com"
